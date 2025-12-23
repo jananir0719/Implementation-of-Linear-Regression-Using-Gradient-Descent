@@ -20,55 +20,82 @@ Program to implement the linear regression using gradient descent.
 Developed by: JANANI R
 RegisterNumber:  25018734
 */
+# Import required libraries
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
 
-# Sample training data (Population of City, Profit)
-X = np.array([6.1101, 5.5277, 8.5186, 7.0032, 5.8598, 8.3829])
-y = np.array([17.592, 9.1302, 13.662, 11.854, 6.8233, 13.662])
+# ------------------------------
+# Step 1: Create the dataset
+# ------------------------------
+data = {
+    'Hours_Studied': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    'Marks_Scored':  [35, 40, 50, 55, 60, 65, 70, 75, 80, 85]
+}
 
-# Number of samples
-m = len(y)
+df = pd.DataFrame(data)
+print("Dataset:")
+print(df)
 
-# Add column of 1s for bias term
-X_b = np.c_[np.ones((m, 1)), X]
+# ------------------------------
+# Step 2: Split into X and Y
+# ------------------------------
+X = df[['Hours_Studied']]   # Feature (2D)
+y = df['Marks_Scored']      # Target (1D)
 
-# Initialize parameters
-theta = np.zeros(2)
+# ------------------------------
+# Step 3: Split data for training & testing
+# ------------------------------
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Gradient Descent settings
-alpha = 0.01
-iterations = 1500
+# ------------------------------
+# Step 4: Create and train the model
+# ------------------------------
+model = LinearRegression()
+model.fit(X_train, y_train)
 
-# Cost function
-def compute_cost(X, y, theta):
-    m = len(y)
-    predictions = X.dot(theta)
-    cost = (1/(2*m)) * np.sum((predictions - y)**2)
-    return cost
+# ------------------------------
+# Step 5: Make predictions
+# ------------------------------
+y_pred = model.predict(X_test)
 
-# Gradient descent algorithm
-def gradient_descent(X, y, theta, alpha, iterations):
-    m = len(y)
-    for _ in range(iterations):
-        gradient = (1/m) * X.T.dot(X.dot(theta) - y)
-        theta = theta - alpha * gradient
-    return theta
+# ------------------------------
+# Step 6: Evaluate the model
+# ------------------------------
+print("\nModel Evaluation:")
+print("Slope (m):", model.coef_[0])
+print("Intercept (c):", model.intercept_)
+print("Mean Squared Error:", mean_squared_error(y_test, y_pred))
+print("R² Score:", r2_score(y_test, y_pred))
 
-# Train model
-theta = gradient_descent(X_b, y, theta, alpha, iterations)
+# ------------------------------
+# Step 7: Visualize results
+# ------------------------------
+plt.scatter(X, y, color='blue', label='Actual Data')
+plt.plot(X, model.predict(X), color='red', label='Regression Line')
+plt.xlabel('Hours Studied')
+plt.ylabel('Marks Scored')
+plt.title('Simple Linear Regression: Hours vs Marks')
+plt.legend()
+plt.show()
 
-print("Theta values:", theta)
-
-# Predict profit for any city population
-population = float(input("Enter city population: "))
-prediction = theta[0] + theta[1] * population
-print("Predicted Profit:", prediction)
+# ------------------------------
+# Step 8: Predict for new data
+# ------------------------------
+hours = float(input("\nEnter number of study hours: "))
+predicted_marks = model.predict([[hours]])
+print(f"Predicted Marks for studying {hours} hours = {predicted_marks[0]:.2f}")
 
 ```
 
 ## Output:
-<img width="492" height="116" alt="image" src="https://github.com/user-attachments/assets/b297d001-a771-460d-99ef-6b7aa38b803f" />
+<img width="532" height="488" alt="image" src="https://github.com/user-attachments/assets/8837bf20-38cc-4e1f-9008-19ff7d0099d8" />
+<img width="971" height="737" alt="image" src="https://github.com/user-attachments/assets/25df48a4-2a47-4303-91c3-f39d87b522b8" />
+<img width="730" height="67" alt="image" src="https://github.com/user-attachments/assets/ca80b5ba-f3ae-49df-a2bd-e12ced9d78d5" />
+
 
 
 
